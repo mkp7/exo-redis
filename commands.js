@@ -17,16 +17,40 @@ function SET (args, store) {
   if (args.length !== 3) return encoders.EncodeError('Wrong number of arguments')
 
   if (typeof args[1] !== 'string' ||
-      typeof args[2] !== 'string') return encoders.EncodeError('Expected "string" type')
+      typeof args[2] !== 'string') return encoders.EncodeError('Expected both arguments to be of "string" type')
 
   store.set(args[1], args[2])
 
   return encoders.EncodeSimpleString('OK')
 }
 
-function GETBIT (args, store) {}
+function GETBIT (args, store) {
+  if (args.length !== 3) return encoders.EncodeError('Wrong number of arguments')
 
-function SETBIT (args, store) {}
+  if (typeof args[1] !== 'string' ||
+      typeof args[2] !== 'string' ||
+      isNaN(parseInt(args[2]))) return encoders.EncodeError('Expected both arguments to be "string" and "number" types')
+
+  if (!store.has(args[1])) return encoders.EncodeInteger(0)
+
+  const val = store.get(args[1])
+  if (typeof val !== 'string') return encoders.EncodeError('Value is expected to be of "string" type')
+
+  const bitPos = parseInt(args[2])
+  const buf = Buffer.from(val)
+  const bytePos = parseInt(bitPos / 8)
+  if (buf.byteLength > bytePos + 1) return encoders.EncodeInteger(0)
+
+  const bitVal = (parseInt(buf[bytePos]) >> (8 - (bitPos % 8))) & 1
+  return encoders.EncodeInteger(bitVal)
+}
+
+function SETBIT (args, store) {
+  if (args.length !== 3) return encoders.EncodeError('Wrong number of arguments')
+
+  // if (typeof args[1] !== 'string'
+  //     || typeof args[2] !== 'number') return encoders.EncodeError('Expected "string" and "number" type')
+}
 
 function SAVE (args, store) {}
 

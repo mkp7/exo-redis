@@ -9,6 +9,8 @@ const processCommands = (str, con) => {
 
   if (val === null) return Buffer.from(str)
 
+  console.log(val)
+
   const cmd = val[0]
 
   if (commands[cmd[0].toUpperCase()] === undefined) {
@@ -30,7 +32,6 @@ const server = net.createServer(con => {
   let bulkBuf = Buffer.from('')
   con.on('data', buf => {
     bulkBuf = Buffer.concat([bulkBuf, buf])
-    console.log(buf.toString())
     bulkBuf = processCommands(bulkBuf.toString(), con)
   })
 
