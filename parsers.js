@@ -1,15 +1,15 @@
 const parsers = [ParseSimpleString, ParseInteger, ParseBulkString, ParseArray]
 const ParseValue = (inp, parsers) => {
-  parsers.forEach(p => {
-    const v = p(inp)
+  for (let i = 0; i < parsers.length; i++) {
+    const v = parsers[i](inp)
     if (v !== null) return v
-  })
+  }
 
   return null
 }
 
 function ParseSimpleString (inp) {
-  const match = /^\+(.+)\r\n/
+  const match = /^\+(.+)\r\n/.exec(inp)
 
   if (match === null) return null
 
@@ -32,9 +32,9 @@ function ParseBulkString (inp) {
   const len = parseInt(match[1])
   inp = inp.slice(match[0].length)
 
-  if (inp.length < len) return null
+  if (inp.length < len + 2 || (inp[len] !== '\r' && inp[len + 1] !== '\n')) return null
 
-  return [inp.slice(0, len), inp.slice(len)]
+  return [inp.slice(0, len), inp.slice(len + 2)]
 }
 
 function ParseArray (inp) {
