@@ -48,8 +48,20 @@ function GETBIT (args, store) {
 function SETBIT (args, store) {
   if (args.length !== 3) return encoders.EncodeError('Wrong number of arguments')
 
-  // if (typeof args[1] !== 'string'
-  //     || typeof args[2] !== 'number') return encoders.EncodeError('Expected "string" and "number" type')
+  if (typeof args[1] !== 'string' ||
+      typeof args[2] !== 'string' ||
+      isNaN(parseInt(args[2]))) return encoders.EncodeError('Expected both arguments to be "string" and "number" types')
+
+  let buf
+  const bitPos = parseInt(args[2])
+  if (!store.has(args[1])) buf = Buffer.alloc(parseInt(bitPos / 8) + (bitPos % 8 === 0 ? 0 : 8))
+  else buf = Buffer.from(store.get(args[1]))
+
+  const bytePos = parseInt(bitPos / 8)
+  // if (buf.byteLength > bytePos + 1) return encoders.EncodeInteger(0)
+
+  const bitVal = (parseInt(buf[bytePos]) >> (8 - (bitPos % 8))) & 1
+  // write new bit value
 }
 
 function SAVE (args, store) {}
