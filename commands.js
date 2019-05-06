@@ -58,12 +58,12 @@ function GETBIT (args, store) {
 
   const bitPos = parseInt(args[2])
   const buf = Buffer.from(val)
-  const bytePos = parseInt(bitPos / 8) + 1
-  if (buf.byteLength > bytePos + 1) {
+  const bytePos = parseInt(bitPos / 8)
+  if (buf.byteLength < bytePos + 1) {
     return encoders.EncodeInteger(0)
   }
 
-  const bitVal = (parseInt(buf[bytePos]) >> (7 - (bitPos % 8))) & 1
+  const bitVal = (buf[bytePos] >> (7 - (bitPos % 8))) & 1
   return encoders.EncodeInteger(bitVal)
 }
 
